@@ -5,12 +5,10 @@ from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.tokens import RefreshToken
 from .serializers import UserSerializer
 from .models import UserProfile
-# admin modules import below
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.permissions import IsAdminUser
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth import authenticate
-from .serializers import UserProfileSerializer
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAdminUser
 
@@ -19,6 +17,7 @@ User = get_user_model()
 class SignupView(APIView):
     def post(self,request):
         serializer = UserSerializer(data=request.data)
+
         if serializer.is_valid():
             user = serializer.save()
             UserProfile.objects.create(user=user)
@@ -27,37 +26,31 @@ class SignupView(APIView):
                 'user': UserSerializer(user).data,
                 'token': str(refresh.access_token)
             }, status=status.HTTP_201_CREATED)
+        
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class LoginView(APIView):
     def post(self, request):
-        # Get email and password from request data
+        
         email = request.data.get('email')
         password = request.data.get('password')
 
-        # lgging request data
-        print("Request Data:", request.data)
+        # print("Request Data:", request.data)
 
-        # validate input fields
         if not email or not password:
             return Response({'error': 'Email and password are required.'}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            # Check if the user exists
             user = User.objects.get(email=email)
         except User.DoesNotExist:
-            # if not raise the error
             return Response({'error': 'Invalid credentials'}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Validate password
         if not user.check_password(password):
             return Response({'error': 'Invalid credentials'}, status=status.HTTP_400_BAD_REQUEST)
-
-        # Check if the user is active
+        
         if not user.is_active:
             return Response({'error': 'Your account has been blocked.'}, status=status.HTTP_403_FORBIDDEN)
 
-        # Generate JWT token
         refresh = RefreshToken.for_user(user)
         return Response({
             'user': {
@@ -73,10 +66,10 @@ class LoginView(APIView):
         
 #admin
 class AdminTokenObtainView(TokenObtainPairView):
-    def post(self, request, *args, **kwargs):
+    def post(self, request):
         user = authenticate(email=request.data.get('email'), password=request.data.get('password'))
         if user and user.is_superadmin:
-            response =  super().post(request, *args, **kwargs)
+            response =  super().post(request)
             response.data['user'] = {
                 'email': user.email,
                 'first_name': user.first_name,
@@ -117,17 +110,6 @@ class AdminDashboardView(APIView):
             }, status=status.HTTP_404_NOT_FOUND)
         
 
-    
-@api_view(['DELETE'])
-@permission_classes([IsAuthenticated, IsAdminUser])
-def delete_user(request, user_id):
-    try:
-        user = User.objects.get(id=user_id)
-        user.delete()
-        return Response({'status': 'success'})
-    except User.DoesNotExist:
-        return Response({'status': 'error', 'message': 'User not found'}, status=404)
-
 class UserProfileView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -148,6 +130,17 @@ class UserProfileView(APIView):
             profile.save()
         return Response({'message': 'profile updated successfully'})
     
+    
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated, IsAdminUser])
+def delete_user(request, user_id):
+    try:
+        user = User.objects.get(id=user_id)
+        user.delete()
+        return Response({'status': 'success'})
+    except User.DoesNotExist:
+        return Response({'status': 'error', 'message': 'User not found'}, status=404)
+
 @api_view(['POST'])
 @permission_classes([IsAdminUser])
 def admin_create_user(request):
@@ -158,23 +151,9 @@ def admin_create_user(request):
         return Response(UserSerializer(user).data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-# @api_view(['PUT'])
-# @permission_classes([IsAdminUser])
-# def admin_update_user(request):
-#     user=User.objects.get(id=request.data.get('id'))    
-#     serializer = UserSerializer(user,data=request.data,partial=True)
-        
-#     if serializer.is_valid():
-#         print(request.data)
-        
-#         user = serializer.save()
-#         return Response(UserSerializer(user).data, status=status.HTTP_201_CREATED)
-    
-#     print("Validation errors:", serializer.errors)
-#     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 @api_view(['PUT'])
 @permission_classes([IsAdminUser])
-def admin_update_user(request, user_id):  # Added user_id parameter
+def admin_update_user(request, user_id):  
     try:
         user = User.objects.get(id=user_id)
         serializer = UserSerializer(user, data=request.data, partial=True)
@@ -182,7 +161,7 @@ def admin_update_user(request, user_id):  # Added user_id parameter
         if serializer.is_valid():
             print("Request data:", request.data)
             user = serializer.save()
-            return Response(UserSerializer(user).data, status=status.HTTP_200_OK)  # Changed to 200
+            return Response(UserSerializer(user).data, status=status.HTTP_200_OK) 
         
         print("Validation errors:", serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

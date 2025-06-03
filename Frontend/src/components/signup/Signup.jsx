@@ -96,10 +96,7 @@ const Signup = () => {
           console.error('Signup failed:', error.message);
         }
       }
-      // catch (error) {
-      //   console.error('Signup failed:', error);
-        // Handle error (e.g., show error message to user)
-      // }
+
     }
   };
 

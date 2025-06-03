@@ -9,5 +9,5 @@ urlpatterns = [
     path('admin/deleteUser/<int:user_id>/', delete_user, name='toggle_user_status'),
     path('admin/create-user/', admin_create_user, name='admin_create_user'),
     path('admin/updateUser/<int:user_id>/', admin_update_user, name='admin_update_user'),
-    # path('admin/update_user/', admin_update_user, name='admin_create_user'),
+  
 ]

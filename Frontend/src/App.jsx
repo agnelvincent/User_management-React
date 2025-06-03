@@ -14,7 +14,7 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Admin routes first */}
+        {/* Admin routes  */}
         <Route path="/admin/editUser" element={<AdminEditUser />} />
         <Route path="/admin/dashboard" element={<AdminDashboard />} />
         <Route path="/admin/create-user" element={<CreateUserPage />} />
@@ -31,28 +31,5 @@ function App() {
     </BrowserRouter>
   );
 }
-
-// function App() {
-
-//   return (
-//     <>
-//     <BrowserRouter>
-//     <Routes>
-//       <Route path="/" element={<Login />} />
-//       <Route path="/login" element={<Login />} />
-//       <Route path="/signup" element={<Signup />} />
-//       <Route path="/home" element={<Home />} />
-//       <Route path="/admin/login" element={<AdminLogin />} />
-      
-//       <Route path="/admin/editUser" element={<AdminEditUser />} />
-//       <Route path="/admin/dashboard" element={<AdminDashboard />} />
-//       <Route path="/admin/create-user" element={<CreateUserPage />} />
-//       <Route path="/user-profile" element={<UserProfile />} />
-//       <Route path="/defaultadmin" element={<AdminRedirect />} />
-//   </Routes>
-//     </BrowserRouter>
-//     </>
-//   )
-// }
 
 export default App;

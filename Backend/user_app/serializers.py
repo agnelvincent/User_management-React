@@ -15,7 +15,7 @@ class UserSerializer(serializers.ModelSerializer):
         return user
     
     def update(self, instance, validated_data):
-    # Update non-sensitive fields
+    
         instance.first_name = validated_data.get('first_name', instance.first_name)
         instance.last_name = validated_data.get('last_name', instance.last_name)
         instance.username = validated_data.get('username', instance.username)
@@ -26,11 +26,9 @@ class UserSerializer(serializers.ModelSerializer):
         instance.is_active = validated_data.get('is_active', instance.is_active)
         instance.is_superadmin = validated_data.get('is_superadmin', instance.is_superadmin)
 
-        # Handle password securely
+       
         if 'password' in validated_data:
             instance.set_password(validated_data['password'])
-
-        # Save the updated instance
         instance.save()
         print("User successfully updated")
         return instance

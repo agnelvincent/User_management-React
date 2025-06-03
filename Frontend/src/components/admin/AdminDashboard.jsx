@@ -54,13 +54,11 @@ const AdminDashboard = () => {
     navigate("/admin/login");
   };
 
-  // const editUser = (user) => {
-  //   navigate("/admin/editUser", { state: { user } });
-  // };
+  
   const editUser = (user) => {
     navigate("/admin/editUser", { 
       state: { 
-        user: user  // Pass user directly as expected by AdminEditUser
+        user: user  
       } 
     });
   };
@@ -124,7 +122,6 @@ const AdminDashboard = () => {
     <div className="admin-dashboard">
       <header className="dashboard-header">
         <div className="header-content">
-          {/* <h1 className="dashboard-title">Admin Dashboard</h1> */}
           <div className="user-info">
             <span className="welcome-message">
               Welcome back, {user ? user.first_name : "Admin"}!

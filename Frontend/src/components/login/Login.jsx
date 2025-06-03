@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch,useSelector } from 'react-redux';
 import { useNavigate, Link } from 'react-router-dom';
 import axiosInstance from '../../axiosconfig';
 import { setAuthData } from '../../redux/auth/authSlice';
 import './Login.css';
 
+
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [error, setError] = useState(''); 
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
@@ -19,17 +21,26 @@ const Login = () => {
             localStorage.setItem('user', JSON.stringify(user));
             localStorage.setItem('token', token);
             dispatch(setAuthData(response.data));
-            navigate('/home')
+            setError(''); 
+            navigate('/home');
         } catch (error) {
-            console.error('Login Failed:', error)
+            if (error.response && error.response.status === 401) {
+               
+                setError('Invalid username or password.');
+            } else {
+                setError('Something went wrong. Please try again later.');
+            }
+            console.error('Login Failed:', error);
         }
-    }
+    };
 
     return (
         <div className="login-container">
             <div className="login-box">
-                <h2>Connect ME</h2>
-                
+                <h2>WELCOME</h2>
+
+                {error && <p className="err-msg">{error}</p>}
+
                 <form onSubmit={handleLogin} className="login-form">
                     <div className="input-group">
                         <input
